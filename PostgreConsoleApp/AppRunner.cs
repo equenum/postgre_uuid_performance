@@ -53,10 +53,11 @@ internal class AppRunner
             swV4.Stop();
 
             // here we disregard the results of the first 'warmup' batch
-            if (i == 0) continue;
-
-            v4Ticks.Add(swV4.ElapsedMilliseconds);
-            Console.WriteLine($"UUID v4 batch {i}/{batchCount} completed.");
+            if (i != 0) 
+            {
+                v4Ticks.Add(swV4.ElapsedMilliseconds);
+                Console.WriteLine($"UUID v4 batch {i}/{batchCount} completed.");
+            }
 
             // insert uuid v7 entries 
 
@@ -72,8 +73,11 @@ internal class AppRunner
 
             swV7.Stop();
 
-            v7Ticks.Add(swV7.ElapsedMilliseconds);
-            Console.WriteLine($"UUID v7 batch {i}/{batchCount} completed.");
+            if (i != 0) 
+            {
+                v7Ticks.Add(swV7.ElapsedMilliseconds);
+                Console.WriteLine($"UUID v7 batch {i}/{batchCount} completed.");
+            }
         }
 
         Console.WriteLine($"UUID v4: {string.Join(", ", v4Ticks)}");
