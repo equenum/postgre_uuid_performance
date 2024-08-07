@@ -4,7 +4,8 @@ namespace PostgreConsoleApp.DataAccess;
 
 internal class MonitorDbContext : DbContext
 {
-    public DbSet<TargetEntity> Targets { get; set; }
+    public DbSet<TargetEntityV4> TargetsV4 { get; set; }
+    public DbSet<TargetEntityV7> TargetsV7 { get; set; }
 
     public MonitorDbContext(DbContextOptions<MonitorDbContext> options)
         : base(options) 
@@ -15,6 +16,7 @@ internal class MonitorDbContext : DbContext
         modelBuilder.HasDefaultSchema("monitor");
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfiguration(new TargetEntityConfiguration());
+        modelBuilder.ApplyConfiguration(new TargetEntityConfigurationV4());
+        modelBuilder.ApplyConfiguration(new TargetEntityConfigurationV7());
     }
 }

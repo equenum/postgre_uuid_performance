@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,7 +9,7 @@ namespace PostgreConsoleApp;
 
 internal class Program
 {
-    static async void Main(string[] args)
+    static async Task Main(string[] args)
     {
         var host = CreateHostBuilder(args).Build();
 
@@ -18,6 +19,7 @@ internal class Program
 
     private static IHostBuilder CreateHostBuilder(string[] args) => 
         Host.CreateDefaultBuilder(args)
+            .ConfigureAppConfiguration((_, builder) => builder.AddUserSecrets<Program>())
             .ConfigureServices((context, services) => 
             {
                 services.AddTransient<AppRunner>();

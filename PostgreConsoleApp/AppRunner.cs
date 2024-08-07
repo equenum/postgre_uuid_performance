@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using PostgreConsoleApp.DataAccess;
 using UUIDNext;
@@ -24,44 +27,80 @@ internal class AppRunner
     {
         _context = context;
     }
-    
+
     internal async Task RunAsync(string[] args)
     {
         const int batchCount = 10;
-        const int targetPerBatchCount = 10;
+        const int targetPerBatchCount = 1000;
 
-        // insert 100.000 records with uuid v4
+        var v4Ticks = new List<long>(); 
+        var v7Ticks = new List<long>(); 
 
-        for (int i = 1; i <= batchCount; i++)
+        for (int i = 0; i <= batchCount ; i++)
         {
+            // insert uuid v4 entries 
+
+            var swV4 = Stopwatch.StartNew();
+
             for (int j = 1; j <= targetPerBatchCount; j++)
             {
-                var target = CreateTarget(Guid.NewGuid());
+                var target = CreateTargetV4(Guid.NewGuid());
 
-                _context.Targets.Add(target);
+                _context.TargetsV4.Add(target);
                 await _context.SaveChangesAsync();
             }
             
+            swV4.Stop();
+
+            // here we disregard the results of the first 'warmup' batch
+            if (i == 0) continue;
+
+            v4Ticks.Add(swV4.ElapsedMilliseconds);
             Console.WriteLine($"UUID v4 batch {i}/{batchCount} completed.");
-        }
 
-        // insert 100.000 records with uuid v7
+            // insert uuid v7 entries 
 
-        for (int i = 1; i <= batchCount; i++)
-        {
+            var swV7 = Stopwatch.StartNew();
+
             for (int j = 1; j <= targetPerBatchCount; j++)
             {
-                var target = CreateTarget(Uuid.NewDatabaseFriendly(Database.PostgreSql));
+                var target = CreateTargetV7(Uuid.NewDatabaseFriendly(Database.PostgreSql));
 
-                _context.Targets.Add(target);
+                _context.TargetsV7.Add(target);
                 await _context.SaveChangesAsync();
             }
-            
+
+            swV7.Stop();
+
+            v7Ticks.Add(swV7.ElapsedMilliseconds);
             Console.WriteLine($"UUID v7 batch {i}/{batchCount} completed.");
         }
+
+        Console.WriteLine($"UUID v4: {string.Join(", ", v4Ticks)}");
+        Console.WriteLine(v4Ticks.Average());
+
+        Console.WriteLine($"UUID v7: {string.Join(", ", v7Ticks)}");
+        Console.WriteLine(v7Ticks.Average());
     }
 
-    private TargetEntity CreateTarget(Guid id) => new TargetEntity() 
+    private TargetEntityV4 CreateTargetV4(Guid id) => new TargetEntityV4() 
+    {
+        Id = Uuid.NewDatabaseFriendly(Database.PostgreSql),
+        DisplayName = DisplayName,
+        Description = Description,
+        Url = Url,
+        CronSchedule = CronSchedule,
+        ChangeType = ChangeType.Value,
+        HtmlTag = HtmlTag,
+        SelectorType = SelectorType.Class,
+        SelectorValue = SelectorValue,
+        ExpectedValue = ExpectedValue,
+        CreatedAt = _createdAt,
+        UpdatedAt = _updatedAt,
+        ResourceId = _resourceId
+    };
+
+    private TargetEntityV7 CreateTargetV7(Guid id) => new TargetEntityV7() 
     {
         Id = Uuid.NewDatabaseFriendly(Database.PostgreSql),
         DisplayName = DisplayName,

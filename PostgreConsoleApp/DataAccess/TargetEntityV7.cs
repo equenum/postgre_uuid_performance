@@ -2,7 +2,7 @@ using System;
 
 namespace PostgreConsoleApp.DataAccess;
 
-internal class TargetEntity
+internal class TargetEntityV7
 {
     public Guid Id { get; set; }
 
