@@ -85,7 +85,7 @@ internal class AppRunner
 
     private TargetEntityV4 CreateTargetV4(Guid id) => new TargetEntityV4() 
     {
-        Id = Uuid.NewDatabaseFriendly(Database.PostgreSql),
+        Id = id,
         DisplayName = DisplayName,
         Description = Description,
         Url = Url,
@@ -102,7 +102,7 @@ internal class AppRunner
 
     private TargetEntityV7 CreateTargetV7(Guid id) => new TargetEntityV7() 
     {
-        Id = Uuid.NewDatabaseFriendly(Database.PostgreSql),
+        Id = id,
         DisplayName = DisplayName,
         Description = Description,
         Url = Url,
